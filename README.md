@@ -25,12 +25,12 @@ access to selected resources from a different origin.
 
 A web page executes a *cross-origin* HTTP request when it requests a resource that has a different origin
 (domain, protocol, or port) from its own. For security reasons, modern browsers restrict some of those cross-origin HTTP requests 
-(such as `scripts`, `iframe`, and JS-initiated requests such as `XMLHttpRequest` and `Fetch API` calls) because they could 
+(`script`, `iframe`, JS-initiated requests such as `XMLHttpRequest` and `Fetch API` calls, and so on) because they could 
 be abused in various ways. These restrictions are applied using a `same-origin` policy, which explicitly prevents the browser
 from requesting those kind of resources unless they come from the *same origin* (FQDN) of the HTML page (or script) that tries 
 to load them.
 
-The screenshot below demonstrates such concept in a visual way:
+The following diagram explains such concept in a visual way:
 
 ![Cross-Origin Requests](https://mdn.mozillademos.org/files/14295/CORS_principle.png)
 
@@ -39,7 +39,7 @@ includes the right HTTP headers, such as the following ones:
 * [Access-Control-Allow-Origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin),
 which indicates whether the response can be shared with requesting code from the given origin.
 * [X-Frame-Options](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options), that can be used to indicate 
-whether or not a browser should be allowed to render a page in a `<frame>`, `<iframe>`, `<embed>` or `<object>`.
+whether or not a browser should be allowed to render a page in a `<frame>`, `<iframe>`, `<embed>` or `<object>` HTML element.
 
 If you can access (or ask) the server hosting the "other origin" resources and configure those headers to authorize your domain,
 there's a high chance you don't need to use this proxy or other workarounds: that's the proper (and most efficient) way to fix
@@ -50,9 +50,10 @@ the CORSflare Reverse Proxy useful enough, since it's specifically designed to r
 
 ## How to install
 To setup CORSflare within a Cloudflare Worker, follow these steps:
-* **Login to Cloudflare**. if you don't have an account, create one: it's free 
+* **Download the latest CORSflare version** from the CORSflare GitHub page: you'll only need the `CORSflare.js` JavaScript file.
+* **Login to Cloudflare**. If you don't have an account, create one: it's free 
 and the basic plan will arguably be enough for most common scenarios, as it will grant 100.000 requests per day.
-* **Navigate to the Workers section**
+* **Navigate to the *Workers* section** using the top-level menu.
 * **Create a new worker**. If it's the first time you do that, you'll also be asked to choose a subdomain, such as `domainName.workers.dev`.
 The subdomain name will be appended to the worker's name to form the worker's FQDN, such as `workerName.domainName.workers.dev`.
 * **Paste the CORSflare.js source code within the worker code**.
@@ -62,15 +63,16 @@ The subdomain name will be appended to the worker's name to form the worker's FQ
 CORSflare's configuration settings can be set via some JavaScript constants & variables placed at the beginning of the source code.
 The best way to do that is to read the code comments. However, here's a quick breakdown of the most relevant options:
 
-* **upstream** : the hostname of the website to retrieve for users (example: 'www.google.com')
-* **upstream_mobile** : The hostname of the website to retrieve for users using mobile devices (example: 'www.google.com')
-* **upstream_path** : Custom pathname for the upstream website ('/' will work for most scenarios).
-* **blocked_regions** : An array of countries and regions that won't be able to use the proxy.
-* **blocked_ip_addresses** : An array of IP addresses that won't be able to use the proxy.
-* **https** : Set this value to TRUE to fetch the upstream website using HTTPS, FALSE to use HTTP.
+* **upstream** : The hostname of the upstream website to proxy (example: `www.google.com`).
+* **upstream_mobile** : the hostname of the upstream website to proxy for requests coming from mobile devices (example: `www.google.com`);
+if the upstream website doesn't have a dedicated hostname for mobile devices, you can set it to NULL.
+* **upstream_path** : custom pathname for the upstream website ('/' will work for most scenarios).
+* **blocked_regions** : an array of countries and regions that won't be able to use the proxy.
+* **blocked_ip_addresses** : an array of IP addresses that won't be able to use the proxy.
+* **https** : set this value to TRUE to fetch the upstream website using HTTPS, FALSE to use HTTP.
 If the upstream website doesn't support HTTPS, this must be set to FALSE; also, if the proxy is HTTPS,
 you'll need to enable the replace_dict rule to HTTPS proxy an HTTP-only website (see below).
-* **cache_control_override** : Set to NULL to use the same [Cache-Control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) settings of the upstream pages, 
+* **cache_control_override** : set to NULL to use the same [Cache-Control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) settings of the upstream pages, 
 or set to one of the allowed values to override them.
 Allowed values include: `must-revalidate`, `no-cache`, `no-store`, `no-transform`, `public`, `private`, `proxy-revalidate`, `max-age=<seconds>`, `s-maxage=<seconds>`.
 * **replacement_rules** : Can be used to define custom text replacement rules (see section below).
