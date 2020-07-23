@@ -48,7 +48,7 @@ your issue.
 Conversely, if you don't have access to those resources and/or can't change their HTTP headers, you might find 
 the CORSflare Reverse Proxy useful enough, since it's specifically designed to remove such limitations.
 
-## Usage
+## How to install
 To setup CORSflare within a Cloudflare Worker, follow these steps:
 * **Login to Cloudflare**. if you don't have an account, create one: it's free 
 and the basic plan will arguably be enough for most common scenarios, as it will grant 100.000 requests per day.
