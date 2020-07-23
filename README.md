@@ -10,6 +10,11 @@ such as:
 
 ... And so on.
 
+The proxy has been designed to run within a Cloudflare Worker, which is freely available for up to 100.000 requests per day;
+this basically means that you can use this proxy to put any external web page within a `<iframe>` element, 
+and/or call a external API via AJAX, and/or to bypass any common CORS restriction without spending a penny, 
+assuming you don't have enterprise-grade service level requirements.
+
 ### Wait a minute... what is CORS?
 If you've stumbled upon this project there's a high chance you already know what CORS actually is 
 and why you need to bypass such policies: if that's the case, just skip this section and go ahead.
