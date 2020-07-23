@@ -2,7 +2,7 @@
 A lightweight JavaScript CORS Reverse Proxy designed to run in a Cloudflare Worker.
 
 ## Introduction
-CORSflare is a reverse proxy written in JavaScript that can be used to bypass most common Cross-Request-Resource-Sharing restrictions,
+CORSflare is a reverse proxy written in JavaScript that can be used to bypass most common Cross-Origin Resource Sharing restrictions,
 such as:
 
 * **Frame/Iframe**: *Refused to display [some URL] in a frame because it is set 'X-Frame-Options' to 'SAMEORIGIN'*
@@ -97,6 +97,11 @@ The following dynamic placeholder can be used within the source and replacement 
 * `{proxy_hostname}` : will be replaced with this proxy's hostname
 
 **HINT**: Rules are processed from top to bottom: put the most specific rules before the generic ones.
+
+## Useful References
+* [CORSflare official project page](https://www.ryadel.com/en/portfolio/corsflare/)
+* [CORSflare setup guide](https://www.ryadel.com/en/corsflare-free-cors-reverse-proxy-bypass-same-origin/)
+* [CORSflare's GitHub page](https://github.com/Darkseal/CORSflare)
 
 ## Credits
 CORSflare is strongly based upon the following projects:
