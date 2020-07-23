@@ -48,6 +48,20 @@ your issue.
 Conversely, if you don't have access to those resources and/or can't change their HTTP headers, you might find 
 the CORSflare Reverse Proxy useful enough, since it's specifically designed to remove such limitations.
 
+## How it works
+
+Here's a diagram that shows how the CORS reverse proxy actually works:
+
+![CORS Reverse Proxy](https://www.ryadel.com/wp-content/uploads/2020/07/cors-reverse-proxy-diagram.png)
+
+In a nutshell, the proxy will respond to the preflight request issued by the *Front End App* (for example, a web browser) 
+by setting the "CORS allowed" headers: right after that, it will forward the request to the target server, receive its response 
+and send them back to the client app without the `same-origin` limitations.
+
+Moreover, **CORSflare** can also be configured to perform some other additional tasks, such as ''on-the-fly'' text replacing 
+(to handle inner links, URLs and so on), cache control overrides, blacklist traffic coming from certain regions / countries IP addresses, 
+and so on.
+
 ## How to install
 To setup CORSflare within a Cloudflare Worker, follow these steps:
 * **Download the latest CORSflare version** from the CORSflare GitHub page: you'll only need the `CORSflare.js` JavaScript file.
