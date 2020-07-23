@@ -86,11 +86,12 @@ if the upstream website doesn't have a dedicated hostname for mobile devices, yo
 * **https** : set this value to TRUE to fetch the upstream website using HTTPS, FALSE to use HTTP.
 If the upstream website doesn't support HTTPS, this must be set to FALSE; also, if the proxy is HTTPS,
 you'll need to enable the replace_dict rule to HTTPS proxy an HTTP-only website (see below).
-* **cache_control_override** : set to NULL to use the same [Cache-Control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) settings of the upstream pages, 
-or set to one of the allowed values to override them.
-Allowed values include: `must-revalidate`, `no-cache`, `no-store`, `no-transform`, `public`, `private`, `proxy-revalidate`, `max-age=<seconds>`, `s-maxage=<seconds>`.
+* **http_response_headers_set** : an array of HTTP Response Headers to add (or to update, in case they're already present 
+in the upstream response); this option can be used to circumvent the `same-origin` policy 
+because it allows to set the `X-Frame-Options` and `Access-Control-Allow-Origin` headers to allow cross-origin requests.
+* **http_response_headers_delete** : an array of HTTP Response Headers to delete (if present in the upstream response);
+this option can be used to circumvent the `same-origin` policy because it allows to remove the `Content-Security-Policy` headers before serving the upstream pages to the end-user client.
 * **replacement_rules** : Can be used to define custom text replacement rules (see section below).
- 
 
 ### Text Replacement Rules
 The `replacement_rules` array can be used to configure the text replacement rules

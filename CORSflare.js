@@ -1,5 +1,6 @@
 // ----------------------------------------------------------------------------------
-// CORSflare - https://github.com/Darkseal/CORSflare
+// CORSflare - v1.0.1
+// ref.: https://github.com/Darkseal/CORSflare
 // A lightweight JavaScript CORS Reverse Proxy designed to run in a Cloudflare Worker
 // ----------------------------------------------------------------------------------
 
@@ -30,12 +31,33 @@ const blocked_ip_addresses = ['0.0.0.0', '127.0.0.1'];
 // you'll need to enable the replacement_rules rule to HTTPS proxy an HTTP-only website (see below).
 const https = true;
 
-// Set to NULL to use the same Cache-Control settings of the upstream pages, or set to one of the allowed values to override them.
-// Allowed values include: 'must-revalidate', 'no-cache', 'no-store', 'no-transform', 'public', 'private', 'proxy-revalidate', 'max-age=<seconds>', 's-maxage=<seconds>'.
-// ref.: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
-const cache_control_override = null;
+// an array of HTTP Response Headers to add (or to update, in case they're already present in the upstream response)
+const http_response_headers_set = {
+    // use this header to bypass the same-origin policy for IFRAME, OBJECT, EMBED and so on
+    // ref.: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+    'X-Frame-Options': '*', 
 
+    // use this header to bypass the same-origin policy for XMLHttpRequest, Fetch API and so on
+    // ref.: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
+    'Access-Control-Allow-Origin': '*',
 
+    // use this header to accept (and respond to) preflight requests when the request's credentials mode is set to 'include'
+    // ref.: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials
+    'Access-Control-Allow-Credentials': true,
+
+    // use this header to override the Cache-Control settings of the upstream pages. Allowed values include:
+    // 'must-revalidate', 'no-cache', 'no-store', 'no-transform', 'public', 'private', 
+    // 'proxy-revalidate', 'max-age=<seconds>', 's-maxage=<seconds>'.
+    // ref.: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
+    // 'Cache-Control': 'no-cache'
+};
+
+// an array of HTTP Response Headers to delete (if present in the upstream response)
+const http_response_headers_delete = [
+    'Content-Security-Policy',
+    'Content-Security-Policy-Report-Only',
+    'Clear-Site-Data'
+];
 
 // ----------------------------------------------------------------------------------
 // TEXT REPLACEMENT RULES
@@ -79,7 +101,8 @@ addEventListener('fetch', event => {
 })
 
 async function fetchAndApply(request) {
-    const region = request.headers.get('cf-ipcountry').toUpperCase();
+    var r = request.headers.get('cf-ipcountry');
+    const region = (r) ? r.toUpperCase() : null;
     const ip_address = request.headers.get('cf-connecting-ip');
     const user_agent = request.headers.get('user-agent');
 
@@ -138,16 +161,18 @@ async function fetchAndApply(request) {
         let new_response_headers = new Headers(response_headers);
         let status = original_response.status;
 
-        if (cache_control_override) {
-            new_response_headers.set('Cache-Control', cache_control_override);
+        if (http_response_headers_set) {
+            for (let k in http_response_headers_set) {
+                var v = http_response_headers_set[v];
+                new_response_headers.set(k, v);
+            }
         }
 
-        new_response_headers.set('X-Frame-Options', '*');
-        new_response_headers.set('access-control-allow-origin', '*');
-        new_response_headers.set('access-control-allow-credentials', true);
-        new_response_headers.delete('content-security-policy');
-        new_response_headers.delete('content-security-policy-report-only');
-        new_response_headers.delete('clear-site-data');
+        if (http_response_headers_delete) {
+            for (let k in http_response_headers_delete) {
+                new_response_headers.delete(k);
+            }
+        }
 
         if (new_response_headers.get("x-pjax-url")) {
             new_response_headers.set("x-pjax-url", response_headers.get("x-pjax-url").replace("//" + upstream_domain, "//" + url_hostname));
@@ -172,17 +197,18 @@ async function fetchAndApply(request) {
 
 async function replace_response_text(response, upstream_domain, host_name) {
     let text = await response.text()
-    var i, j;
-    for (i in replacement_rules) {
-        j = replacement_rules[i];
+    if (replacement_rules) {
+        for (let k in replacement_rules) {
+            var v = replacement_rules[k];
 
-        i = i.replace(new RegExp('{upstream_hostname}', 'g'), upstream_domain);
-        i = i.replace(new RegExp('{proxy_hostname}', 'g'), host_name);
-        j = j.replace(new RegExp('{upstream_hostname}', 'g'), upstream_domain);
-        j = j.replace(new RegExp('{proxy_hostname}', 'g'), host_name);
+            k = k.replace(new RegExp('{upstream_hostname}', 'g'), upstream_domain);
+            k = k.replace(new RegExp('{proxy_hostname}', 'g'), host_name);
+            v = v.replace(new RegExp('{upstream_hostname}', 'g'), upstream_domain);
+            v = v.replace(new RegExp('{proxy_hostname}', 'g'), host_name);
 
-        let re = new RegExp(i, 'g')
-        text = text.replace(re, j);
+            let re = new RegExp(k, 'g')
+            text = text.replace(re, v);
+        }
     }
     return text;
 }
