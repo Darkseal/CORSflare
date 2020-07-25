@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------------
-// CORSflare - v1.0.1
+// CORSflare - v1.0.2
 // ref.: https://github.com/Darkseal/CORSflare
 // A lightweight JavaScript CORS Reverse Proxy designed to run in a Cloudflare Worker
 // ----------------------------------------------------------------------------------
@@ -83,7 +83,7 @@ const http_response_headers_delete = [
 const replacement_rules = {
 
     // enable this rule only if you need to HTTPS proxy an HTTP-only website
-    'http://{upstream_hostname}/': 'https://{proxy_hostname}/',
+    // 'http://{upstream_hostname}/': 'https://{proxy_hostname}/',
 
     // this rule should be always enabled (replaces the upstream hostname for internal links, CSS, JS, and so on)
     '{upstream_hostname}': '{proxy_hostname}',
