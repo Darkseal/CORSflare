@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.3] - 2020-07-30
+
+### Added
+- `replacement_content_types` configuration option, to allow arbitrary content types.
+- `replacement_use_regex` configuration option, to enable or disable RegEx syntax in replacement rules.
+
+### Removed
+- `text/html` and `UTF-8` hardcoded values in content-type specifications.
+
 ## [1.0.2] - 2020-07-25
 
 ### Removed

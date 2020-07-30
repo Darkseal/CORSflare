@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------------
-// CORSflare - v1.0.2
+// CORSflare - v1.0.3
 // ref.: https://github.com/Darkseal/CORSflare
 // A lightweight JavaScript CORS Reverse Proxy designed to run in a Cloudflare Worker
 // ----------------------------------------------------------------------------------
@@ -90,11 +90,29 @@ const replacement_rules = {
 
 }
 
+// the replacement_rules will be only applied to the returned content 
+// with the following content types specified by the replacement_content_types array.
+const replacement_content_types = ['text/html'];
+
+// Set this value to TRUE to allow RegEx syntax in replacement rules (see URLs below for details):
+// - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+// - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet
+// NOTE: if RegEx syntax is enabled, RegEx special chars in search patterns will have to be escaped
+// using a double back slash (\\) accordingly.
+const replacement_use_regex = true;
+
 
 
 // ----------------------------------------------------------------------------------
 // MAIN CODE
 // ----------------------------------------------------------------------------------
+
+var regexp_upstreamHostname = (replacement_use_regex)
+    ? new RegExp('{upstream_hostname}', 'g')
+    : null;
+var regexp_proxyHostname = (replacement_use_regex)
+    ? new RegExp('{proxy_hostname}', 'g')
+    : null;
 
 addEventListener('fetch', event => {
     event.respondWith(fetchAndApply(event.request));
@@ -178,10 +196,9 @@ async function fetchAndApply(request) {
             new_response_headers.set("x-pjax-url", response_headers.get("x-pjax-url").replace("//" + upstream_domain, "//" + url_hostname));
         }
 
-        const content_type = new_response_headers.get('content-type');
+        const content_type = new_response_headers.get('content-type').toLowerCase();
         if (content_type != null
-            && content_type.toLowerCase().includes('text/html')
-            && content_type.toLowerCase().includes('utf-8')) {
+            && replacement_content_types.some(v => content_type.includes(v))) {
             original_text = await replace_response_text(original_response_clone, upstream_domain, url_hostname);
         } else {
             original_text = original_response_clone.body;
@@ -201,18 +218,24 @@ async function replace_response_text(response, upstream_domain, host_name) {
         for (let k in replacement_rules) {
             var v = replacement_rules[k];
 
-            k = k.replace(new RegExp('{upstream_hostname}', 'g'), upstream_domain);
-            k = k.replace(new RegExp('{proxy_hostname}', 'g'), host_name);
-            v = v.replace(new RegExp('{upstream_hostname}', 'g'), upstream_domain);
-            v = v.replace(new RegExp('{proxy_hostname}', 'g'), host_name);
-
-            let re = new RegExp(k, 'g')
-            text = text.replace(re, v);
+            if (replacement_use_regex) {
+                k = k.replace(regexp_upstreamHostname, upstream_domain);
+                k = k.replace(regexp_proxyHostname, host_name);
+                v = v.replace(regexp_upstreamHostname, upstream_domain);
+                v = v.replace(regexp_proxyHostname, host_name);
+                text = text.replace(new RegExp(k, 'g'), v);
+            }
+            else {
+                k = k.split('{upstream_hostname}').join(upstream_domain);
+                k = k.split('{proxy_hostname}').join(host_name);
+                v = v.split('{upstream_hostname}').join(upstream_domain);
+                v = v.split('{proxy_hostname}').join(host_name);
+                text = text.split(k).join(v);
+            }
         }
     }
     return text;
 }
-
 
 async function is_mobile_user_agent(user_agent_info) {
     var agents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod"];

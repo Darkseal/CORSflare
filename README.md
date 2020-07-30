@@ -92,13 +92,17 @@ because it allows to set the `X-Frame-Options` and `Access-Control-Allow-Origin`
 * **http_response_headers_delete** : an array of HTTP Response Headers to delete (if present in the upstream response);
 this option can be used to circumvent the `same-origin` policy because it allows to remove the `Content-Security-Policy` headers before serving the upstream pages to the end-user client.
 * **replacement_rules** : Can be used to define custom text replacement rules (see section below).
+* **replacement_content_types** : Can be used to specify the returned content's content-type(s) to apply
+the `replacement_rules` to.
+* **replacement_use_regex** : Can be used to enable or disable RegEx syntax in replacement rules.
 
 ### Text Replacement Rules
 The `replacement_rules` array can be used to configure the text replacement rules
 that will be applied by the proxy before serving any text/html resource back to the user.
 
 The common usage of such rules is to "fix" non-standard internal URLs and/or local paths
-within the upstream's HTML pages (css, js, internal links, custom fonts, and so on) and force them 
+within the upstream's returned contents (html pages, css, js, internal links, custom fonts, and so on,
+depending on the content type(s) specified in the `replacement_content_types` array) and force them 
 to pass to the proxy; however, they can also be used to alter the response content in various ways
 (change a logo, modify the page title, add a custom css/js, and so on).
 
