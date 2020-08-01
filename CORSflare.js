@@ -239,7 +239,8 @@ async function fetchAndApply(request) {
         if (set_cookie_samesite_none && new_response_headers.has("set-cookie")) {
             // NOTE: unfortunately the Fetch API Headers object doesn't support multiple Set-Cookie headers due to a bug in Fetch API's
             // "Headers" interface, as they are merged into a single comma-separated string (which is incompatible with most browsers).
-            // For that very reason, we can only support the * first * set - cookie header here.
+            // ref.: https://stackoverflow.com/questions/63204093/how-to-get-set-multiple-set-cookie-response-headers-using-fetch-api
+            // For that very reason, we can only support the * first * set-cookie header here.
             var firstCookie = new_response_headers.get("set-cookie").split(',').shift();
             new_response_headers.set("set-cookie", firstCookie
                 .split("SameSite=Lax; Secure").join("")
