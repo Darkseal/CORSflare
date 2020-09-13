@@ -81,6 +81,8 @@ The best way to do that is to read the code comments. However, here's a quick br
 * **upstream_mobile** : the hostname of the upstream website to proxy for requests coming from mobile devices (example: `www.google.com`);
 if the upstream website doesn't have a dedicated hostname for mobile devices, you can set it to NULL.
 * **upstream_path** : custom pathname for the upstream website ('/' will work for most scenarios).
+* **upstream_allow_override**: set it to TRUE to allow the default upstream to be overridden with a customizable GET parameter, FALSE otherwise.
+* **upstream_get_parameter**: the GET parameter that can be used to override the default upstream if `upstream_allow_override` is set to TRUE (default is `CORSflare_upstream`).
 * **blocked_regions** : an array of countries and regions that won't be able to use the proxy.
 * **blocked_ip_addresses** : an array of IP addresses that won't be able to use the proxy.
 * **https** : set this value to TRUE to fetch the upstream website using HTTPS, FALSE to use HTTP.

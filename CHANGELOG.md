@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.5] - 2020-09-13
+
+### Added
+- `enable_upstream_get` configuration option, to allow the usage of the `CORSflare_upstream` GET parameter to set the upstream on-the-fly using the request URL.
+- Tweaked the redirect handling logic to work around an issue preventing GDrive content from being proxied (see [here](https://github.com/Darkseal/CORSflare/issues/1) for details).
+
 ## [1.0.4] - 2020-08-01
 
 ### Fixed
