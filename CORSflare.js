@@ -146,9 +146,7 @@ async function fetchAndApply(request) {
     let response = null;
     let url = new URL(request.url);
     let url_hostname = url.hostname;
-    let upstream_GET = (upstream_allow_override)
-        ? url.searchParams.get(upstream_get_parameter)
-        : null;
+    let upstream_GET = (upstream_allow_override) ? url.searchParams.get(upstream_get_parameter) : null;
 
     if (https == true) {
         url.protocol = 'https:';
