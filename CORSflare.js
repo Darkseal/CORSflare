@@ -158,9 +158,10 @@ async function fetchAndApply(request) {
     if (upstream_GET) {
         upstream_domain = upstream_GET;
     }
-    if (upstream_mobile && await is_mobile_user_agent(user_agent)) {
+    else if (upstream_mobile && await is_mobile_user_agent(user_agent)) {
         upstream_domain = upstream_mobile;
-    } else {
+    }
+    else {
         upstream_domain = upstream;
     }
 
